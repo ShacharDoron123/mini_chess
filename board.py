@@ -116,6 +116,11 @@ class Board:
                     return True
         return False
 
+    def copy(self):
+        new_board = Board()
+        new_board.game_board = self.game_board.copy()
+        return new_board
+
 
 
 
