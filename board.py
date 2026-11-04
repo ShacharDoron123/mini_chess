@@ -41,18 +41,9 @@ class Board:
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
-        if not self.game_board[from_row,from_col] == EMPTY:
-            letter = self.game_board[from_row, from_col]
-            piece = create_piece_from_letter(letter,self)
-            if not piece.is_move_valid(from_pos, to_pos):
-                return False
-        else:
-            return False
 
         self.game_board[to_row,to_col] = self.game_board[from_row,from_col]
         self.game_board[from_row,from_col] = EMPTY
-
-        return True
 
     def is_inside(self, pos):
         row, col = pos
@@ -101,6 +92,20 @@ class Board:
                 if self.game_board[row,col] == king:
                     return True
         return False
+
+    def is_move_valid(self, from_pos, to_pos, color):
+        from_row, from_col = from_pos
+
+        if not self.is_inside(from_pos):
+            return False
+
+        if self.get_color(from_pos) != color:
+            return False
+
+        letter = self.game_board[from_row, from_col]
+        piece = create_piece_from_letter(letter, self)
+
+        return piece.is_move_valid(from_pos, to_pos)
 
     def copy(self):
         new_board = Board()

@@ -161,21 +161,23 @@ class King(Piece):
 
         return False
 
+
+PIECE_CLASSES = {
+    WHITE_PAWN: Pawn,
+    BLACK_PAWN: Pawn,
+    WHITE_KNIGHT: Knight,
+    BLACK_KNIGHT: Knight,
+    WHITE_BISHOP: Bishop,
+    BLACK_BISHOP: Bishop,
+    WHITE_ROOK: Rook,
+    BLACK_ROOK: Rook,
+    WHITE_QUEEN: Queen,
+    BLACK_QUEEN: Queen,
+    WHITE_KING: King,
+    BLACK_KING: King,
+}
+
 def create_piece_from_letter(letter, board):
-    PIECE_CLASSES = {
-                        WHITE_PAWN: Pawn,
-                        BLACK_PAWN: Pawn,
-                        WHITE_KNIGHT: Knight,
-                        BLACK_KNIGHT: Knight,
-                        WHITE_BISHOP: Bishop,
-                        BLACK_BISHOP: Bishop,
-                        WHITE_ROOK: Rook,
-                        BLACK_ROOK: Rook,
-                        WHITE_QUEEN: Queen,
-                        BLACK_QUEEN: Queen,
-                        WHITE_KING: King,
-                        BLACK_KING: King,
-    }
     if str(letter).islower():
         color = BLACK
     else:
