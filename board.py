@@ -1,21 +1,7 @@
 import numpy as np
 from constants import *
-from piece import Pawn, Knight, Bishop, Rook, Queen, King
+from piece import create_piece_from_letter
 
-PIECE_CLASSES = {
-    WHITE_PAWN: Pawn,
-    BLACK_PAWN: Pawn,
-    WHITE_KNIGHT: Knight,
-    BLACK_KNIGHT: Knight,
-    WHITE_BISHOP: Bishop,
-    BLACK_BISHOP: Bishop,
-    WHITE_ROOK: Rook,
-    BLACK_ROOK: Rook,
-    WHITE_QUEEN: Queen,
-    BLACK_QUEEN: Queen,
-    WHITE_KING: King,
-    BLACK_KING: King,
-}
 
 class Board:
 
@@ -57,7 +43,7 @@ class Board:
 
         if not self.game_board[from_row,from_col] == EMPTY:
             letter = self.game_board[from_row, from_col]
-            piece = PIECE_CLASSES[letter](letter, self.get_color(from_pos), self)
+            piece = create_piece_from_letter(letter,self)
             if not piece.is_move_valid(from_pos, to_pos):
                 return False
         else:

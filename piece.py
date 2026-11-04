@@ -8,6 +8,7 @@ class Piece(ABC):
         self.color = color
         self.board = board
 
+
     @abstractmethod
     def is_move_valid(self, from_pos, to_pos):
         pass
@@ -159,6 +160,28 @@ class King(Piece):
             return True
 
         return False
+
+def create_piece_from_letter(letter, board):
+    PIECE_CLASSES = {
+                        WHITE_PAWN: Pawn,
+                        BLACK_PAWN: Pawn,
+                        WHITE_KNIGHT: Knight,
+                        BLACK_KNIGHT: Knight,
+                        WHITE_BISHOP: Bishop,
+                        BLACK_BISHOP: Bishop,
+                        WHITE_ROOK: Rook,
+                        BLACK_ROOK: Rook,
+                        WHITE_QUEEN: Queen,
+                        BLACK_QUEEN: Queen,
+                        WHITE_KING: King,
+                        BLACK_KING: King,
+    }
+    if str(letter).islower():
+        color = BLACK
+    else:
+        color = WHITE
+    return PIECE_CLASSES[letter](letter,color,board )
+
 
 
 
