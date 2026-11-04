@@ -104,6 +104,19 @@ class Board:
 
         return True
 
+    def is_king_alive(self, color):
+        if color == WHITE:
+            king = WHITE_KING
+        else:
+            king = BLACK_KING
+
+        for row in range(BOARD_ROWS):
+            for col in range(BOARD_COLS):
+                if self.game_board[row,col] == king:
+                    return True
+        return False
+
+
 
 
 
