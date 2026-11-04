@@ -143,8 +143,22 @@ class King(Piece):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
-        pass
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
 
+        row_diff = to_row - from_row
+        col_diff = to_col - from_col
+
+        if not self.board.is_inside(to_pos):
+            return False
+
+        if not (abs(row_diff) <= 1 and abs(col_diff) <= 1 and (row_diff != 0 or col_diff != 0)):
+            return False
+
+        if self.board.is_empty(to_pos) or self.board.get_color(to_pos) != self.color:
+            return True
+
+        return False
 
 
 
