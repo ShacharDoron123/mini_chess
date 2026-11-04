@@ -60,8 +60,13 @@ class Knight(Piece):
         if not self.board.is_inside(to_pos):
             return False
 
+        if not self.board.is_empty(to_pos) and self.board.get_color(to_pos) == self.color:
+            return False
 
+        if abs(row_diff) == 1 and abs(col_diff) == 2 or abs(row_diff) == 2 and abs(col_diff) == 1:
+            return True
 
+        return False
 
 
 class Bishop(Piece):
@@ -69,7 +74,28 @@ class Bishop(Piece):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
-        pass
+        from_row, from_col = from_pos
+        to_row, to_col = to_pos
+
+        row_diff = to_row - from_row
+        col_diff = to_col - from_col
+
+        if not self.board.is_inside(to_pos):
+            return False
+
+        if row_diff == 0 or col_diff == 0:
+            return False
+
+        if abs(row_diff) != abs(col_diff):
+            return False
+
+        if not self.board.is_path_clear(from_pos,to_pos):
+            return False
+
+        if not self.board.is_empty(to_pos) and self.board.get_color(to_pos) == self.color:
+            return False
+
+        return True
 
 
 class Rook(Piece):
@@ -100,7 +126,16 @@ class Queen(Piece):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
-        pass
+        rook = Rook(self.type, self.color, self.board)
+        bishop = Bishop(self.type, self.color, self.board)
+
+        if rook.is_move_valid(from_pos, to_pos):
+            return True
+
+        if bishop.is_move_valid(from_pos, to_pos):
+            return True
+
+        return False
 
 
 class King(Piece):
