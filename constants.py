@@ -19,3 +19,7 @@ BLACK_KING = "k"
 
 WHITE = "white"
 BLACK = "black"
+
+HUMAN = "human"
+RANDOM = "random"
+TIE = "tie"

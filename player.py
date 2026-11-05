@@ -33,4 +33,8 @@ class HumanPlayer(Player):
 
 class RandomPlayer(Player):
     def get_player_move(self):
-        pass
+        legal_moves = self.board.get_legal_moves(self.color)
+        move = random.choice(legal_moves)
+        from_pos, to_pos = move
+
+        return from_pos, to_pos

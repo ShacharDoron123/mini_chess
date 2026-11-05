@@ -107,6 +107,19 @@ class Board:
 
         return piece.is_move_valid(from_pos, to_pos)
 
+    def get_legal_moves(self, color):
+        legal_moves = []
+        for from_row in range(BOARD_ROWS):
+            for from_col in range(BOARD_COLS):
+                if self.get_color([from_row, from_col]) == color:
+                    from_pos = [from_row, from_col]
+                    for to_row in range(BOARD_ROWS):
+                        for to_col in range(BOARD_COLS):
+                            to_pos = [to_row,to_col]
+                            if self.is_move_valid(from_pos,to_pos, color):
+                                legal_moves.append([from_pos,to_pos])
+        return legal_moves
+
     def copy(self):
         new_board = Board()
         new_board.game_board = self.game_board.copy()
