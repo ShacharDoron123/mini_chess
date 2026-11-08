@@ -23,3 +23,32 @@ BLACK = "black"
 HUMAN = "human"
 RANDOM = "random"
 TIE = "tie"
+
+# ---------- GUI constants ----------
+WINDOW_TITLE = "Mini Chess"
+
+LIGHT_SQUARE_COLOR = "#f0d9b5"
+DARK_SQUARE_COLOR = "#b58863"
+SELECTED_COLOR = "#f6f669"
+HINT_COLOR = "#9bd18b"
+
+PIECE_FONT = ("Segoe UI Symbol", 30)
+SYMBOL_BUTTON_WIDTH = 3
+SYMBOL_BUTTON_HEIGHT = 1
+
+COMPUTER_MOVE_DELAY_MS = 700
+
+PIECE_SYMBOLS = {
+    WHITE_PAWN: "♙",
+    WHITE_KNIGHT: "♘",
+    WHITE_BISHOP: "♗",
+    WHITE_ROOK: "♖",
+    WHITE_QUEEN: "♕",
+    WHITE_KING: "♔",
+    BLACK_PAWN: "♟",
+    BLACK_KNIGHT: "♞",
+    BLACK_BISHOP: "♝",
+    BLACK_ROOK: "♜",
+    BLACK_QUEEN: "♛",
+    BLACK_KING: "♚",
+}

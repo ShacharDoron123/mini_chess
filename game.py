@@ -20,6 +20,36 @@ class Game:
 
         self.current_player = self.player1
 
+    # ---------- methods used by the GUI (one move at a time) ----------
+
+    def switch_player(self):
+        if self.current_player == self.player1:
+            self.current_player = self.player2
+        else:
+            self.current_player = self.player1
+
+    def make_move(self, from_pos, to_pos):
+        """Performs one move for the current player and passes the turn.
+        Returns False (and changes nothing) if the move is not legal."""
+        if not self.board.is_move_valid(from_pos, to_pos, self.current_player.color):
+            return False
+
+        self.board.perform_move(from_pos, to_pos)
+        self.switch_player()
+        return True
+
+    def get_result(self):
+        """Returns None if the game goes on, otherwise WHITE, BLACK or TIE."""
+        if not self.board.is_king_alive(WHITE):
+            return BLACK
+        if not self.board.is_king_alive(BLACK):
+            return WHITE
+        if len(self.board.get_legal_moves(self.current_player.color)) == 0:
+            return TIE
+        return None
+
+    # ---------- the terminal version ----------
+
     def play_game(self):
 
         while self.board.is_king_alive(WHITE) and self.board.is_king_alive(BLACK):
