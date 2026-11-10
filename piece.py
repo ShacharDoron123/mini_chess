@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+
 from constants import *
 
 
@@ -12,6 +13,9 @@ class Piece(ABC):
     @abstractmethod
     def is_move_valid(self, from_pos, to_pos):
         pass
+
+    def is_promotion_move(self,to_pos):
+        return False
 
 
 class Pawn(Piece):
@@ -45,6 +49,13 @@ class Pawn(Piece):
                 return True
 
             return False
+
+    def is_promotion_move(self, to_pos):
+        to_row, to_col = to_pos
+        if to_row == 0 or to_row == BOARD_ROWS-1:
+            return True
+        return False
+
 
 
 class Knight(Piece):

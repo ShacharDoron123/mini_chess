@@ -41,9 +41,17 @@ class Board:
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
-
         self.game_board[to_row,to_col] = self.game_board[from_row,from_col]
         self.game_board[from_row,from_col] = EMPTY
+
+        piece = create_piece_from_letter(self.game_board[to_row,to_col],self)
+
+        if piece.is_promotion_move(to_pos):
+            if self.get_color(to_pos) == WHITE:
+                self.game_board[to_row,to_col] = WHITE_QUEEN
+            else:
+                self.game_board[to_row,to_col] = BLACK_QUEEN
+
 
     def is_inside(self, pos):
         row, col = pos
