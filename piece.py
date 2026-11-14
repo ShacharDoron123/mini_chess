@@ -4,7 +4,10 @@ from constants import *
 
 
 class Piece(ABC):
+    """Base class for all the pieces. It holds the piece letter, its color and the board."""
+
     def __init__(self, piece_type, color, board):
+        """Save the piece letter, its color (WHITE or BLACK) and the board it plays on."""
         self.type = piece_type
         self.color = color
         self.board = board
@@ -12,17 +15,34 @@ class Piece(ABC):
 
     @abstractmethod
     def is_move_valid(self, from_pos, to_pos):
+        """Check if the move follows the rules of this piece.
+
+        Every piece class must write its own version.
+        Returns True if the move is legal, otherwise False.
+        """
         pass
 
     def is_promotion_move(self,to_pos):
+        """Check if this move turns the piece into a queen.
+
+        For most pieces the answer is always False. Only the Pawn changes it.
+        """
         return False
 
 
 class Pawn(Piece):
+    """A pawn: moves one step forward and captures one step diagonally forward."""
+
     def __init__(self, piece_type, color, board):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
+        """Check a pawn move.
+
+        White moves up and black moves down.
+        One step forward is allowed only to an empty square.
+        A diagonal step forward is allowed only to capture an enemy piece.
+        """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
@@ -51,6 +71,7 @@ class Pawn(Piece):
             return False
 
     def is_promotion_move(self, to_pos):
+        """Return True if the target square is in the first or the last row of the board."""
         to_row, to_col = to_pos
         if to_row == 0 or to_row == BOARD_ROWS-1:
             return True
@@ -59,10 +80,16 @@ class Pawn(Piece):
 
 
 class Knight(Piece):
+    """A knight: jumps in an L shape and can jump over other pieces."""
+
     def __init__(self, piece_type, color, board):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
+        """Check a knight move: two squares in one direction and one in the other.
+
+        The target must not hold a piece of the same color.
+        """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
@@ -82,10 +109,16 @@ class Knight(Piece):
 
 
 class Bishop(Piece):
+    """A bishop: moves diagonally."""
+
     def __init__(self, piece_type, color, board):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
+        """Check a bishop move: any number of squares diagonally with a clear path.
+
+        The target must not hold a piece of the same color.
+        """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
@@ -111,10 +144,16 @@ class Bishop(Piece):
 
 
 class Rook(Piece):
+    """A rook: moves in a straight line (a row or a column)."""
+
     def __init__(self, piece_type, color, board):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
+        """Check a rook move: any number of squares in a row or a column with a clear path.
+
+        The target must not hold a piece of the same color.
+        """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
@@ -134,10 +173,17 @@ class Rook(Piece):
 
 
 class Queen(Piece):
+    """A queen: moves like a rook and like a bishop."""
+
     def __init__(self, piece_type, color, board):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
+        """Check a queen move.
+
+        It creates a temporary rook and bishop of the same color
+        and returns True if one of them can make the move.
+        """
         rook = Rook(self.type, self.color, self.board)
         bishop = Bishop(self.type, self.color, self.board)
 
@@ -151,10 +197,16 @@ class Queen(Piece):
 
 
 class King(Piece):
+    """A king: moves one step in any direction."""
+
     def __init__(self, piece_type, color, board):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
+        """Check a king move: one square in any direction.
+
+        The target must not hold a piece of the same color.
+        """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
 
@@ -189,15 +241,14 @@ PIECE_CLASSES = {
 }
 
 def create_piece_from_letter(letter, board):
+    """Create the piece object that matches a letter on the board.
+
+    The letter decides the type (for example "N" is a Knight)
+    and the color (uppercase = white, lowercase = black).
+    Returns the new piece object.
+    """
     if str(letter).islower():
         color = BLACK
     else:
         color = WHITE
     return PIECE_CLASSES[letter](letter,color,board )
-
-
-
-
-
-
-
