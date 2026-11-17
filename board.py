@@ -221,6 +221,18 @@ class Board:
                                 legal_moves.append([from_pos,to_pos])
         return legal_moves
 
+    def get_str(self):
+        """Return a string of 25 letters that represents the board (row after row).
+
+        It is used as a key for saving boards, because a string can be a key in a dictionary.
+        """
+        result = ""
+        for row in range(BOARD_ROWS):
+            for col in range(BOARD_COLS):
+                result += self.game_board[row,col]
+
+        return result
+
     def copy(self):
         """Return a new Board with the same pieces in the same places.
 
