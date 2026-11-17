@@ -4,15 +4,21 @@ from constants import *
 
 
 class Game:
-    """One game between two players, from the start until someone wins or it is a tie."""
+    """One game between two players, from the start until someone wins or it is a tie.
 
-    def __init__(self, player1_type, player2_type):
+    Game creates the board and the two players, manages the turns, and decides when the game is over.
+    """
+
+    def __init__(self, player1_type, player2_type, show_board):
         """Create a board and two players.
 
         player1_type, player2_type: HumanPlayer or RandomPlayer (the class itself).
+        show_board: True to print the board and the result during the game, and False to play silently
+        (the Tournament uses False, because it plays many games).
         Player 1 plays white and starts, and player 2 plays black.
         """
         self.board = Board()
+        self.show_board = show_board
 
         if player1_type == HumanPlayer:
             self.player1 = HumanPlayer(WHITE, self.board)
@@ -29,16 +35,21 @@ class Game:
     def play_game(self):
         """Play the whole game, move after move.
 
-        The game ends when a king is captured, or when the current player has no legal move (a tie).
-        Prints the board and the result.
-        Returns WHITE, BLACK or TIE.
+        In every turn the legal moves of the current player are calculated once. If there are none, the game
+        ends in a tie. Otherwise the current player chooses a move from them, the board performs it, and the
+        turn passes to the other player. The game also ends when a king is captured.
+        If show_board is True, the board and the result are printed.
+        Returns WHITE or BLACK (the winner), or TIE.
         """
         while self.board.is_king_alive(WHITE) and self.board.is_king_alive(BLACK):
-            self.board.print_board()
-            if len(self.board.get_legal_moves(self.current_player.color)) == 0:
-                print("It's a tie!")
+            if self.show_board:
+                self.board.print_board()
+            legal_moves = self.board.get_legal_moves(self.current_player.color)
+            if len(legal_moves) == 0:
+                if self.show_board:
+                    print("It's a tie!")
                 return TIE
-            move = self.current_player.get_player_move()
+            move = self.current_player.get_player_move(legal_moves)
             from_pos, to_pos = move
             self.board.perform_move(from_pos, to_pos)
             if self.current_player == self.player1:
@@ -47,10 +58,12 @@ class Game:
                 self.current_player = self.player1
 
         if not self.board.is_king_alive(WHITE):
-            self.board.print_board()
-            print(f"Player {BLACK} won!")
+            if self.show_board:
+                self.board.print_board()
+                print(f"Player {BLACK} won!")
             return BLACK
         else:
-            self.board.print_board()
-            print(f"Player {WHITE} won!")
+            if self.show_board:
+                self.board.print_board()
+                print(f"Player {WHITE} won!")
             return WHITE

@@ -4,10 +4,19 @@ from constants import *
 
 
 class Piece(ABC):
-    """Base class for all the pieces. It holds the piece letter, its color and the board."""
+    """Base class for all the pieces.
+
+    A piece holds its letter, its color and the board it plays on. A piece only knows the rules of its
+    own movement and never changes the board (the Board moves the pieces). Piece objects are created by
+    create_piece_from_letter when the board needs to check a move.
+    """
 
     def __init__(self, piece_type, color, board):
-        """Save the piece letter, its color (WHITE or BLACK) and the board it plays on."""
+        """Save the piece letter, its color (WHITE or BLACK) and the board it plays on.
+
+        The board is saved so that the piece can ask it questions while it checks a move,
+        for example is_empty, get_color and is_inside.
+        """
         self.type = piece_type
         self.color = color
         self.board = board
@@ -17,21 +26,32 @@ class Piece(ABC):
     def is_move_valid(self, from_pos, to_pos):
         """Check if the move follows the rules of this piece.
 
-        Every piece class must write its own version.
+        from_pos, to_pos: the squares as [row, col].
+        Every piece class must write its own version (this is what makes the class abstract).
         Returns True if the move is legal, otherwise False.
+
+        Used by Board.get_legal_moves and Board.is_move_valid.
         """
         pass
 
     def is_promotion_move(self,to_pos):
         """Check if this move turns the piece into a queen.
 
-        For most pieces the answer is always False. Only the Pawn changes it.
+        to_pos: the target square as [row, col].
+        For most pieces the answer is always False, so the Board can ask any piece after a move without
+        checking its type. Only the Pawn changes this answer.
+
+        Used by Board.perform_move.
         """
         return False
 
 
 class Pawn(Piece):
-    """A pawn: moves one step forward and captures one step diagonally forward."""
+    """A pawn: moves one step forward and captures one step diagonally forward.
+
+    White moves up (the row number gets smaller) and black moves down. There is no double step and
+    no en passant. A pawn that reaches the last row becomes a queen.
+    """
 
     def __init__(self, piece_type, color, board):
         super().__init__(piece_type, color, board)
@@ -39,9 +59,10 @@ class Pawn(Piece):
     def is_move_valid(self, from_pos, to_pos):
         """Check a pawn move.
 
-        White moves up and black moves down.
-        One step forward is allowed only to an empty square.
-        A diagonal step forward is allowed only to capture an enemy piece.
+        from_pos, to_pos: the squares as [row, col].
+        White moves up and black moves down. One step forward is allowed only to an empty square.
+        A diagonal step forward is allowed only to capture an enemy piece. Any other move is not legal.
+        Returns True if the move is legal, otherwise False.
         """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
@@ -71,7 +92,12 @@ class Pawn(Piece):
             return False
 
     def is_promotion_move(self, to_pos):
-        """Return True if the target square is in the first or the last row of the board."""
+        """Return True if the target square is in the first or the last row of the board.
+
+        to_pos: the target square as [row, col].
+        A pawn can only move forward, so a white pawn that reaches row 0 and a black pawn that reaches the
+        last row must be promoted. The Board then replaces the pawn with a queen.
+        """
         to_row, to_col = to_pos
         if to_row == 0 or to_row == BOARD_ROWS-1:
             return True
@@ -86,9 +112,12 @@ class Knight(Piece):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
-        """Check a knight move: two squares in one direction and one in the other.
+        """Check a knight move.
 
-        The target must not hold a piece of the same color.
+        from_pos, to_pos: the squares as [row, col].
+        The move must be two squares in one direction and one square in the other direction. The knight
+        jumps, so the squares between are not checked. The target must not hold a piece of the same color.
+        Returns True if the move is legal, otherwise False.
         """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
@@ -115,9 +144,13 @@ class Bishop(Piece):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
-        """Check a bishop move: any number of squares diagonally with a clear path.
+        """Check a bishop move.
 
-        The target must not hold a piece of the same color.
+        from_pos, to_pos: the squares as [row, col].
+        The move must be diagonal (the row and the column change by the same number of squares, and the
+        piece must really move), and the path must be clear (is_path_clear). The target must not hold a
+        piece of the same color.
+        Returns True if the move is legal, otherwise False.
         """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
@@ -150,9 +183,12 @@ class Rook(Piece):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
-        """Check a rook move: any number of squares in a row or a column with a clear path.
+        """Check a rook move.
 
-        The target must not hold a piece of the same color.
+        from_pos, to_pos: the squares as [row, col].
+        The move must stay in the same row or in the same column, and the path must be clear
+        (is_path_clear). The target must not hold a piece of the same color.
+        Returns True if the move is legal, otherwise False.
         """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
@@ -181,8 +217,9 @@ class Queen(Piece):
     def is_move_valid(self, from_pos, to_pos):
         """Check a queen move.
 
-        It creates a temporary rook and bishop of the same color
-        and returns True if one of them can make the move.
+        from_pos, to_pos: the squares as [row, col].
+        It creates a temporary Rook and a temporary Bishop of the same color and returns True if one of them
+        can make the move. This way the rules of the straight and the diagonal movement are not written twice.
         """
         rook = Rook(self.type, self.color, self.board)
         bishop = Bishop(self.type, self.color, self.board)
@@ -203,9 +240,12 @@ class King(Piece):
         super().__init__(piece_type, color, board)
 
     def is_move_valid(self, from_pos, to_pos):
-        """Check a king move: one square in any direction.
+        """Check a king move.
 
+        from_pos, to_pos: the squares as [row, col].
+        The move must be one square in any direction (also diagonally), and the king must really move.
         The target must not hold a piece of the same color.
+        Returns True if the move is legal, otherwise False.
         """
         from_row, from_col = from_pos
         to_row, to_col = to_pos
@@ -243,9 +283,15 @@ PIECE_CLASSES = {
 def create_piece_from_letter(letter, board):
     """Create the piece object that matches a letter on the board.
 
-    The letter decides the type (for example "N" is a Knight)
-    and the color (uppercase = white, lowercase = black).
+    letter: a letter from the board, for example "N". board: the Board the piece will play on.
+    The letter decides the type of the piece (for example "N" is a Knight) and its color
+    (an uppercase letter is white and a lowercase letter is black).
     Returns the new piece object.
+
+    Why it is needed: the board stores only letters, but checking a move needs an object that knows the
+    rules of the piece. A separate function means that the Board does not need to know all the piece
+    classes (this is called a factory function). Used by Board.get_legal_moves, Board.is_move_valid and
+    Board.perform_move.
     """
     if str(letter).islower():
         color = BLACK

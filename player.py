@@ -4,17 +4,26 @@ from constants import *
 
 
 class Player(ABC):
-    """Base class for all the players. It holds the player's color and the board."""
+    """Base class for all the players. It holds the player's color and the board.
+
+    Game uses every player in the same way (it asks for a move), so it does not need to know which
+    kind of player it is. This is why Player is an abstract class.
+    """
 
     def __init__(self, color, board):
-        """Save the color of the player (WHITE or BLACK) and the board."""
+        """Save the color of the player (WHITE or BLACK) and the board.
+
+        The color is needed to know which pieces belong to the player.
+        """
         self.color = color
         self.board = board
 
     @abstractmethod
-    def get_player_move(self):
+    def get_player_move(self, legal_moves):
         """Choose the next move.
 
+        legal_moves: the list of all the legal moves of this player (each move is [from_pos, to_pos]).
+        Game calculates it once in every turn and gives it to the player.
         Every player class must write its own version.
         Returns two positions: from_pos and to_pos.
         """
@@ -24,10 +33,12 @@ class Player(ABC):
 class HumanPlayer(Player):
     """A player that is a person who types the moves."""
 
-    def get_player_move(self):
+    def get_player_move(self, legal_moves):
         """Ask the user for a move until a legal one is typed.
 
-        The user types the row and column of the start square and of the target square.
+        legal_moves: the list of the legal moves, used to check the move that the user typed.
+        The user types the row and the column of the start square and of the target square. If the move is
+        not in the list, an error message is printed and the user is asked again.
         Returns from_pos and to_pos.
         """
         while True:
@@ -40,7 +51,7 @@ class HumanPlayer(Player):
             from_pos = [from_row,from_col]
             to_pos = [to_row,to_col]
 
-            if self.board.is_move_valid(from_pos, to_pos, self.color):
+            if [from_pos,to_pos] in legal_moves:
                 return from_pos, to_pos
 
             print("Invalid move. Try again!")
@@ -49,12 +60,14 @@ class HumanPlayer(Player):
 class RandomPlayer(Player):
     """A computer player that plays a random legal move."""
 
-    def get_player_move(self):
-        """Choose a random move from all the legal moves.
+    def get_player_move(self, legal_moves):
+        """Choose a random move from the legal moves.
 
+        legal_moves: the list of the legal moves (calculated by Game). Every legal move has the same chance.
+        The list must not be empty, and Game makes sure of that (an empty list is a tie) before it calls
+        this function.
         Returns from_pos and to_pos.
         """
-        legal_moves = self.board.get_legal_moves(self.color)
         move = random.choice(legal_moves)
         from_pos, to_pos = move
 

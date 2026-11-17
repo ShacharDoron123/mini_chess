@@ -1,11 +1,16 @@
-from game import Game
+import time
+
 from player import RandomPlayer
+from tournament import Tournament
 
 
 def main():
-    game = Game(RandomPlayer, RandomPlayer)
-    result = game.play_game()
-    print(f"Result: {result}")
+    """Run a tournament between two random players and print the results and the running time."""
+    start = time.perf_counter()
+    tournament = Tournament(RandomPlayer, RandomPlayer, 100, False)
+    tournament.start_a_tournament()
+    print(f"Execution time: {time.perf_counter() - start:.2f} seconds")
 
 
-main()
+if __name__ == "__main__":
+    main()
