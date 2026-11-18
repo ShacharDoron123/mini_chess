@@ -1,3 +1,5 @@
+import json
+import os
 
 from constants import *
 from game import Game
@@ -22,6 +24,8 @@ class Tournament:
         self.num_games = num_games
         self.show_board = show_board
 
+        self.scoreboards = self.load_scoreboards("data.json")
+
         self.white_wins = 0
         self.black_wins = 0
         self.ties = 0
@@ -33,15 +37,37 @@ class Tournament:
         matching counter. At the end, print_results prints the summary.
         """
         for i in range(self.num_games):
-            game = Game(self.player1_type, self.player2_type, self.show_board)
-            result = game.play_game()
+            game = Game(self.player1_type, self.player2_type, 0.9, 1, -1, 0, self.show_board)
+            result, game_history = game.play_game()
             if result == WHITE:
                 self.white_wins += 1
             elif result == BLACK:
                 self.black_wins += 1
             else:
                 self.ties += 1
+            self.update_scoreboards(game_history)
+        self.save_scoreboards()
         self.print_results()
+
+    def load_scoreboards(self, json_file_name):
+        if os.path.exists(json_file_name):
+            with open(json_file_name, 'r') as file:
+                self.scoreboards = json.load(file)
+        else:
+            self.scoreboards = {}
+        return self.scoreboards
+
+    def update_scoreboards(self, game_history):
+        for board_str, score in game_history:
+            if board_str not in self.scoreboards:
+                self.scoreboards[board_str] = [score, 1]
+            else:
+                old_score, num = self.scoreboards[board_str]
+                self.scoreboards[board_str] = [((old_score * num) + score) / (num + 1), num + 1]
+
+    def save_scoreboards(self):
+        with open("data.json", 'w') as file:
+            json.dump(self.scoreboards, file)
 
     def print_results(self):
         """Print how many games each side won and how many ended in a tie.

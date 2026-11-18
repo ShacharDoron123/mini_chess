@@ -229,7 +229,10 @@ class Board:
         result = ""
         for row in range(BOARD_ROWS):
             for col in range(BOARD_COLS):
-                result += self.game_board[row,col]
+                if self.game_board[row,col] == EMPTY:
+                    result += "."
+                else:
+                    result += self.game_board[row,col]
 
         return result
 
